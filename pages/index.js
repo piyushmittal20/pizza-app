@@ -1,7 +1,7 @@
-import axios from "axios";
 import Head from "next/head";
-import Image from "next/image";
 import { useEffect, useState } from "react";
+import { getProductList } from '../redux/prodSlice'
+import { useSelector, useDispatch } from 'react-redux'
 import Add from "../components/Add";
 import AddButton from "../components/AddButton";
 import Featured from "../components/Featured";
@@ -10,25 +10,13 @@ import styles from "../styles/Home.module.css";
 
 export default function Home() {
   const [close, setClose] = useState(true);
-  const [pizzaList, setPizzaList] = useState([])
 
-  const fetchPizzaList = async () => {
-    try {
-      const { data } = await axios.get("/api/products");
-      return data
-    } catch (err) {
-      console.log(err)
-    }
-  }
+  const dispatch = useDispatch()
+  const { pizzaList } = useSelector(state => state.product);
 
   useEffect(() => {
-    const getData = async () => {
-      const res = await fetchPizzaList()
-      setPizzaList(res)
-    }
-
-    getData()
-  }, [])
+    dispatch(getProductList())
+  }, [dispatch])
 
   return (
     <div className={styles.container}>
@@ -44,20 +32,3 @@ export default function Home() {
     </div>
   );
 }
-
-// export const getServerSideProps = async (ctx) => {
-//   const myCookie = ctx.req?.cookies || "";
-//   let admin = false;
-
-//   if (myCookie.token === process.env.TOKEN) {
-//     admin = true;
-//   }
-
-//   const { data } = await axios.get("http://localhost:3000/api/products");
-//   return {
-//     props: {
-//       pizzaList: data,
-//       admin,
-//     },
-//   };
-// };
